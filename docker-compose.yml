@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+      - "5001:5001"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - prisma-data:/app/prisma
+    environment:
+      - DATABASE_URL=file:/app/prisma/dev.db
+      - JWT_SECRET=c8e017b9c3276d99c89fc4a2082ed4e6d5fc3b4e8c057f3d3b79116f1adc7078
+      - ADMIN_PASSWORD_HASH=SETUP_REQUIRED
+      - PORT=5001
+      - NODE_ENV=development
+    command: sh -c "
+      mkdir -p /app/prisma &&
+      chmod -R 777 /app/prisma &&
+      npx prisma generate &&
+      npx prisma migrate reset --force &&
+      npm run dev"
+
+volumes:
+  prisma-data:

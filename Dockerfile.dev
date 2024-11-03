@@ -1,0 +1,22 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy project files
+COPY . .
+
+# Create prisma directory and set permissions
+RUN mkdir -p prisma && chmod 777 prisma
+
+# Generate Prisma client
+RUN npx prisma generate
+
+EXPOSE 5001 5173
+
+CMD ["npm", "run", "dev"]
